@@ -1,0 +1,298 @@
+{
+  "info": {
+    "_postman_id": "8b567ed1-1111-4cd8-b494-04e9a0952f1d",
+    "name": "MCP ArcGIS Location Services - Postman Collection",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "40624683",
+    "_collection_link": "https://go.postman.co/collection/40624683-8b567ed1-1111-4cd8-b494-04e9a0952f1d?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "Initialize",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{MCP_API_KEY}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json, text/event-stream"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"jsonrpc\": \"2.0\",\r\n  \"id\": 1,\r\n  \"method\": \"initialize\",\r\n  \"params\": {\r\n    \"protocolVersion\": \"2026-11-12\",\r\n    \"capabilities\": {},\r\n    \"clientInfo\": {\r\n      \"name\": \"postman-client\",\r\n      \"version\": \"1.0.0\"\r\n    }\r\n  }\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://location-services-mcp.arcgis.com/beta/mcp",
+          "protocol": "https",
+          "host": [
+            "location-services-mcp",
+            "arcgis",
+            "com"
+          ],
+          "path": [
+            "beta",
+            "mcp"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Tools List",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{MCP_API_KEY}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json, text/event-stream"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"jsonrpc\": \"2.0\",\r\n  \"id\": 2,\r\n  \"method\": \"tools/list\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://location-services-mcp.arcgis.com/beta/mcp",
+          "protocol": "https",
+          "host": [
+            "location-services-mcp",
+            "arcgis",
+            "com"
+          ],
+          "path": [
+            "beta",
+            "mcp"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Prompts List",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{MCP_API_KEY}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json, text/event-stream"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"jsonrpc\": \"2.0\",\r\n  \"id\": 2,\r\n  \"method\": \"prompts/list\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://location-services-mcp.arcgis.com/beta/mcp",
+          "protocol": "https",
+          "host": [
+            "location-services-mcp",
+            "arcgis",
+            "com"
+          ],
+          "path": [
+            "beta",
+            "mcp"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Find Address Candidates",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{MCP_API_KEY}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "f",
+              "value": "json",
+              "type": "text"
+            },
+            {
+              "key": "SingleLine",
+              "value": "Find Esri headquarters in Redlands",
+              "type": "text"
+            }
+          ]
+        },
+        "url": {
+          "raw": "https://geocode-api.arcgis.com/arcgis/rest/services/World/GeocodeServer/findAddressCandidates",
+          "protocol": "https",
+          "host": [
+            "geocode-api",
+            "arcgis",
+            "com"
+          ],
+          "path": [
+            "arcgis",
+            "rest",
+            "services",
+            "World",
+            "GeocodeServer",
+            "findAddressCandidates"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Reverse Geocode",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{MCP_API_KEY}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "f",
+              "value": "json",
+              "type": "text"
+            },
+            {
+              "key": "location",
+              "value": "-117.1964,34.0601",
+              "type": "text"
+            }
+          ]
+        },
+        "url": {
+          "raw": "https://geocode-api.arcgis.com/arcgis/rest/services/World/GeocodeServer/reverseGeocode",
+          "protocol": "https",
+          "host": [
+            "geocode-api",
+            "arcgis",
+            "com"
+          ],
+          "path": [
+            "arcgis",
+            "rest",
+            "services",
+            "World",
+            "GeocodeServer",
+            "reverseGeocode"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Solve Route",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{MCP_API_KEY}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "f",
+              "value": "json",
+              "type": "text"
+            },
+            {
+              "key": "stops",
+              "value": "{\"features\":[{\"geometry\":{\"x\":-122.4079,\"y\":37.78356},\"attributes\":{\"Name\":\"From\",\"RouteName\":\"Route A\"}},{\"geometry\":{\"x\":-122.404,\"y\":37.782},\"attributes\":{\"Name\":\"To\",\"RouteName\":\"Route A\"}}]}",
+              "type": "text"
+            }
+          ]
+        },
+        "url": {
+          "raw": "https://route-api.arcgis.com/arcgis/rest/services/World/Route/NAServer/Route_World/solve",
+          "protocol": "https",
+          "host": [
+            "route-api",
+            "arcgis",
+            "com"
+          ],
+          "path": [
+            "arcgis",
+            "rest",
+            "services",
+            "World",
+            "Route",
+            "NAServer",
+            "Route_World",
+            "solve"
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}

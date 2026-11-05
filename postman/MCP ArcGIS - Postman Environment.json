@@ -1,0 +1,16 @@
+{
+	"id": "4c7642b1-8db6-4e4c-91b1-0bc8cf449a86",
+	"name": "MCP ArcGIS - Postman Environment",
+	"values": [
+		{
+			"key": "MCP_API_KEY",
+			"value": "",
+			"type": "default",
+			"enabled": true
+		}
+	],
+	"color": null,
+	"_postman_variable_scope": "environment",
+	"_postman_exported_at": "2026-11-05T04:18:48.846Z",
+	"_postman_exported_using": "Postman/12.34.0"
+}
