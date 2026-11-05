@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Map chat</title>
+<link rel="stylesheet" href="{{ url_for('static', path='styles.css') }}">
+<!-- Sets esriConfig.apiKey; must load before the SDK -->
+<script src="/arcgis-config.js"></script>
+<!-- ArcGIS Maps SDK for JavaScript 5.1 (includes the map components) -->
+<script type="module" src="https://js.arcgis.com/5.1/"></script>
+</head>
+<body>
+<div class="app">
+  <section class="mapPane" aria-label="Map">
+    <arcgis-map basemap="arcgis/navigation" center="-98, 39" zoom="3">
+	<!-- <arcgis-map basemap="arcgis/topographic" center="-118.805, 34.020" zoom="13"> -->
+      <arcgis-zoom slot="top-left"></arcgis-zoom>
+    </arcgis-map>
+    <p class="mapMsg" id="mapMsg"></p>
+  </section>
+  <section class="chat" aria-label="Chat">
+    <header><h1>Map chat</h1><button type="button" id="clear" class="ghost">New chat</button></header>
+    <div id="log" class="log" role="log" aria-live="polite"></div>
+    <div class="examples" id="examples"></div>
+    <div class="sel" id="sel" hidden><span id="selText"></span><button type="button" id="selClear" class="ghost">Clear</button></div>
+    <form id="form" class="composer">
+      <textarea id="input" rows="1" maxlength="2000" placeholder="Ask about a place, address, route or elevation" aria-label="Message"></textarea>
+      <button id="send">Send</button>
+    </form>
+  </section>
+</div>
+<script type="module" src="{{ url_for('static', path='app.js') }}"></script>
+</body>
+</html>

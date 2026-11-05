@@ -1,0 +1,152 @@
+Build a standalone Python chat-based map app using FastAPI and MCP for ArcGIS Location Services.
+
+This is a chat-first application with an interactive map panel. Use the ArcGIS Maps SDK for JavaScript version 5.1 (https://js.arcgis.com/5.1/) in the browser for map display, feature rendering, and extent fitting. Use the backend for MCP access, request orchestration, response normalization, and chat/session handling.
+
+This is the documentation of ArcGIS Maps SDK for JavaScript version 5.1 link https://developers.arcgis.com/javascript/latest/. Please use this version 5.1 for map display, feature rendering, and extent fitting
+
+Create:
+- app.py
+- requirements.txt
+- mcp.example.json
+- README.md
+- templates/index.html
+- static/app.js
+- static/styles.css
+
+Core features:
+- Chat-first interaction for supported ArcGIS Location Services workflows
+- Geocode (find_address_candidates)
+- Reverse geocode (reverse_geocode)
+- Route solve (solve_route)
+- Elevation (elevation_at_locations)
+- ArcGIS interactive map visualization using ArcGIS Maps SDK for JavaScript
+- Natural-language response text paired with normalized geographic output when available
+
+Supported chat behaviors:
+- Interpret user requests and map them to the supported MCP tools
+- Before calling MCP tools, classify each user request into one of: `geocode`, `reverse`, `route`, `elevation`, or `unsupported`
+- Only call the MCP tools required for the chosen classification
+- Do not require an external LLM by default; implement chat interpretation with deterministic rule-based classification and templated response generation unless an LLM is explicitly added and documented
+- Return both:
+  - natural-language answer text
+  - structured geographic output normalized to GeoJSON FeatureCollection when map data exists
+- If no map data is available, still return a useful text answer
+- If the user asks for unsupported workflows such as drive-time polygons, service areas, or optimization, explain the limitation clearly instead of inventing unsupported MCP tool usage
+- For unsupported or text-only requests, return a successful response with a helpful answer and `geojson: null`
+- For geocoding requests, return the best candidate by default and include candidate metadata so the UI can explain what was chosen
+
+MCP requirements:
+- Read mcp.json from the local folder, with fallback to ../mcp.json
+- Use servers.alp-mcp-server.url + headers
+- JSON-RPC initialize + tools/call
+- Support JSON and SSE responses
+- Parse SSE data lines and use the last valid JSON payload
+- Normalize errors and tool output cleanly
+- Implement a reusable MCP client/helper for initialize and tool calls instead of duplicating request logic per route
+
+Credential split:
+- Keep MCP bearer token for MCP server auth
+- Use a separate browser map API key from app.mapApiKey or MAP_API_KEY / ARCGIS_API_KEY
+- Do not hardcode secrets
+
+HTTP routes:
+- GET /
+- GET /api/health
+- GET /api/tools
+- GET /api/arcgis-token
+- GET /arcgis-config.js
+- POST /api/chat
+- GET /api/chat/stream
+
+Chat/UI behavior:
+- ChatGPT-like layout with a scrolling conversation, user and assistant bubbles, input box, and submit button
+- Show friendly in-progress status text while requests are running
+- Preserve chat history during the browser session
+- Trim or summarize older chat history when needed so long conversations do not degrade app behavior
+- Render the map beside or below the chat depending on viewport width
+- Plot returned points and routes when available
+- Fit the map extent to returned features
+- Keep the app responsive for desktop and mobile
+
+Map behavior:
+- Render returned GeoJSON on the ArcGIS map using distinct symbology for points and routes
+- By default, replace prior assistant-result graphics when a new result arrives
+- If the user explicitly asks to keep or add to previous results, append graphics instead of replacing them
+- Keep map rendering driven by the normalized GeoJSON returned from the backend
+- If a response has text only, preserve the map state and show the text answer without forcing a map update
+
+Python implementation expectations:
+- Use Python for the MCP bridge, routing, config loading, chat orchestration, and token/config endpoints
+- Use FastAPI with Jinja2 templates for the HTML shell and FastAPI static file serving for `/static`
+- Use `httpx` for outbound HTTP requests to the MCP server
+- Keep dependencies minimal: `fastapi`, `uvicorn`, `httpx`, `jinja2`, and only add others if clearly needed
+- Default port 3000 with PORT override
+- Start the app with `uvicorn app:app --host 0.0.0.0 --port ${PORT:-3000}`
+- Initialize the MCP session once at startup if practical; otherwise lazily initialize and cache the session state for reuse across requests
+- If `mcp.json` is missing, malformed, or missing `servers.alp-mcp-server`, fail clearly with a readable startup or request error
+- Document required configuration in README, including where `mcp.json` should live and how to run the app
+
+Route contracts:
+- `GET /` serves the main HTML page
+- `GET /api/health` returns a simple JSON health response
+- `GET /api/tools` returns the discovered MCP tools or a normalized error
+- `GET /api/arcgis-token` returns JSON containing the browser map credential, using the configured API key rather than the MCP bearer token, for example `{ "apiKey": "..." }`
+- `GET /arcgis-config.js` returns a small JavaScript config payload the frontend can read
+- `POST /api/chat` accepts a user message and returns a normalized JSON chat response
+- `GET /api/chat/stream` provides server-sent events for an active chat request identified by `requestId` and emits event types `status`, `tool_call`, `result`, `error`, and `done`
+- `POST /api/chat` may either return the final response directly for non-streaming use or return a `requestId` that the frontend can subscribe to via `GET /api/chat/stream?requestId=...`
+- If streaming is implemented, document clearly in README whether the UI uses direct responses, SSE, or both
+
+Chat request contract:
+- Request JSON:
+  - `message`: user prompt text
+  - `history`: optional prior chat turns for conversational continuity as an array of `{ "role": "user" | "assistant", "content": "..." }`
+  - `context`: optional UI context such as selected coordinates or map extent, for example `{ "selectedPoint": { "x": number, "y": number }, "mapExtent": { "xmin": number, "ymin": number, "xmax": number, "ymax": number } }`
+- The server is responsible for choosing the appropriate supported MCP tools from the user request
+- The server must classify the request before calling tools and include the chosen classification in response metadata
+- The server must not invent unsupported tools or fabricated results
+- If history is too large, trim or summarize older turns while preserving enough context for the current request
+
+Chat response contract:
+- Success JSON:
+  - `text`: assistant answer string
+  - `geojson`: GeoJSON FeatureCollection or `null`
+  - `toolCalls`: optional summary of which MCP tools were used
+  - `meta`: optional normalized details such as request classification, chosen geocode candidate details, geocode candidate count, route summary, or elevation point count
+  - `requestId`: optional request identifier when SSE status streaming is used
+- Error JSON:
+  - `error`: object with `message`, `code`, and optional `details`
+
+GeoJSON normalization rules:
+- Geocode results normalize to `Point` features
+- Reverse geocode results normalize to a `Point` feature
+- Elevation results normalize to one or more `Point` features with elevation attributes
+- Route results normalize to a `LineString` feature
+- If a supported response has no usable geometry, return `geojson: null` and keep the text answer useful
+
+README expectations:
+- Include setup and run instructions for the FastAPI app
+- Document the supported chat interpretation approach, including that the default implementation is rule-based unless an LLM is explicitly added
+- Document required environment variables and browser map credential setup
+- Document the required Python version
+- Include exact dependency install commands and the exact run command
+- Include example `mcp.json` placement and configuration notes
+- Explain where a new user gets the ArcGIS browser API key and where it should be configured
+- Include example chat prompts for geocode, reverse geocode, route, elevation, and unsupported requests, along with the expected app behavior for each
+
+Input and error handling:
+- Validate request bodies with explicit FastAPI/Pydantic models
+- Return clear 4xx errors for invalid input and 5xx errors for upstream MCP failures
+- Surface MCP error messages in a normalized JSON shape the frontend can display
+- Handle empty results without crashing the UI
+- Keep response shapes consistent across success and error cases
+- Include clear user-facing handling for missing environment variables, MCP connection failures, rate limits, oversized prompts, and invalid or empty responses
+- Add retry behavior for transient upstream failures when reasonable, but do not hide persistent errors
+
+Acceptance:
+- App starts from the Python entrypoint and serves both API routes and frontend assets
+- Chat flow works end-to-end with MCP-powered tool usage
+- Geocode, reverse geocode, route, and elevation workflows are available through chat
+- The map renders returned point and route data when present
+- Responses include both text and GeoJSON when map data exists
+- Errors are human-readable and actionable

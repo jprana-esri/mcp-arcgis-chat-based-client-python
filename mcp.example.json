@@ -1,0 +1,12 @@
+{
+  "servers": {
+    "alp-mcp-server": {
+      "type": "http",
+      "url": "https://YOUR-MCP-HOST/mcp",
+      "headers": { "Authorization": "Bearer ${ALP_MCP_TOKEN}" }
+    }
+  },
+  "app": {
+    "mapApiKey": "${MAP_API_KEY}"
+  }
+}
