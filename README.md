@@ -5,7 +5,7 @@ Chat-first map app. A FastAPI backend classifies each message, calls **MCP for A
 ## Requirements
 - **Python 3.10 or later**
 - An MCP server URL and credentials for ArcGIS Location Services
-- An ArcGIS browser API key (below)
+- An ArcGIS API key
 
 ## Setup
 ```bash
@@ -13,13 +13,17 @@ python3 -m venv .venv
 source .venv/bin/activate          # Windows: .venv\Scripts\activate
 pip install -r requirements.txt    # fastapi, uvicorn, httpx, jinja2
 cp mcp.example.json mcp.json       # then edit mcp.json
-export MAP_API_KEY="your-browser-api-key"
 ```
 Run (exact command):
 ```bash
-uvicorn app:app --host 0.0.0.0 --port ${PORT:-3000}
+uvicorn app:app --host 0.0.0.0 --port 3000
 ```
-Then open http://localhost:3000. `python app.py` also works and honors `PORT`.
+or
+```bash
+python app.py
+```
+
+Then open http://localhost:3000.
 
 ## Configuration
 **`mcp.json` location:** put it next to `app.py`. The app falls back to `../mcp.json`. Keep it out of version control.
@@ -35,22 +39,22 @@ Then open http://localhost:3000. `python app.py` also works and honors `PORT`.
   "app": { "mapApiKey": "${MAP_API_KEY}" }
 }
 ```
-- `servers.alp-mcp-server.url` and `headers` are the **MCP credentials**. `${ENV_VAR}` placeholders are expanded, so the token can stay in the environment.
+- `servers.alp-mcp-server.url` and `headers` are the **MCP credentials**. `${ALP_MCP_TOKEN}` placeholders are expanded, so the token can stay in the environment.
 - A missing, malformed or incomplete `mcp.json` is logged at startup and returned as a readable error on API requests. The MCP session is initialized at startup, or lazily on first use, then reused.
 
-**Browser map API key (separate from the MCP token)**
-1. Sign in at https://developers.arcgis.com (an ArcGIS Location Platform or ArcGIS Online account).
+**ArcGIS Basemap API key (separate from the MCP token)**
+1. Sign in at https://location.arcgis.com or https://www.arcgis.com (an ArcGIS Location Platform or ArcGIS Online account).
 2. Go to **Credentials → API key credentials → Create API key**.
 3. Enable the **Basemaps** service. Restrict the key to your site's referrer, such as `http://localhost:3000`.
-4. Configure it with `MAP_API_KEY` or `ARCGIS_API_KEY` in the environment, or with `app.mapApiKey` in `mcp.json`. The environment takes precedence.
+4. Configure it with `MAP_API_KEY` in the `mcp.json`.
 
 Browser keys are visible to anyone using the page by design, so restrict them and never reuse the MCP bearer token here. Without a key, chat still works and the map panel shows a message.
 
 | Variable | Purpose |
 |---|---|
 | `PORT` | HTTP port (default 3000) |
-| `MAP_API_KEY` / `ARCGIS_API_KEY` | browser map key |
-| any `${VAR}` used in `mcp.json` | for example `ALP_MCP_TOKEN` |
+| `MAP_API_KEY` in `mcp.json` | for display ArcGIS Basemap |
+| `${ALP_MCP_TOKEN}` in `mcp.json` | for ArcGIS Location Platform MCP |
 
 ## How requests are interpreted
 The default implementation is **deterministic and rule-based**. No external LLM is used, and answers are generated from templates. Before any tool runs, the server classifies the message as `geocode`, `reverse`, `route`, `elevation` or `unsupported`. The choice is returned in `meta.classification`, and only the tools that workflow needs are called. Unusual phrasing may be misclassified, and the help text then explains what is supported.
