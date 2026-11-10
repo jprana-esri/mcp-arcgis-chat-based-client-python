@@ -1,10 +1,10 @@
 {
   "info": {
-    "_postman_id": "8b567ed1-1111-4cd8-b494-04e9a0952f1d",
+    "_postman_id": "4ea833c9-91e4-4ba0-8763-c264a129e987",
     "name": "MCP ArcGIS Location Services - Postman Collection",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
     "_exporter_id": "40624683",
-    "_collection_link": "https://go.postman.co/collection/40624683-8b567ed1-1111-4cd8-b494-04e9a0952f1d?source=collection_link"
+    "_collection_link": "https://go.postman.co/collection/40624683-4ea833c9-91e4-4ba0-8763-c264a129e987?source=collection_link"
   },
   "item": [
     {
@@ -29,7 +29,7 @@
         ],
         "body": {
           "mode": "raw",
-          "raw": "{\r\n  \"jsonrpc\": \"2.0\",\r\n  \"id\": 1,\r\n  \"method\": \"initialize\",\r\n  \"params\": {\r\n    \"protocolVersion\": \"2026-11-12\",\r\n    \"capabilities\": {},\r\n    \"clientInfo\": {\r\n      \"name\": \"postman-client\",\r\n      \"version\": \"1.0.0\"\r\n    }\r\n  }\r\n}",
+          "raw": "{\r\n  \"jsonrpc\": \"2.0\",\r\n  \"id\": 1,\r\n  \"method\": \"initialize\",\r\n  \"params\": {\r\n    \"protocolVersion\": \"2026-11-09\",\r\n    \"capabilities\": {},\r\n    \"clientInfo\": {\r\n      \"name\": \"postman-client\",\r\n      \"version\": \"1.0.0\"\r\n    }\r\n  }\r\n}",
           "options": {
             "raw": {
               "language": "json"
@@ -98,6 +98,96 @@
       "response": []
     },
     {
+      "name": "Tools Call",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{MCP_API_KEY}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json, text/event-stream"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"jsonrpc\": \"2.0\",\r\n  \"id\": 2,\r\n  \"method\": \"tools/call\",\r\n  \"params\": {\r\n    \"name\": \"find_address_candidates\",\r\n    \"arguments\": {\r\n        \"singleLine\": \"Disneyland Park, Anaheim, California\"\r\n    }\r\n  }\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://location-services-mcp.arcgis.com/beta/mcp",
+          "protocol": "https",
+          "host": [
+            "location-services-mcp",
+            "arcgis",
+            "com"
+          ],
+          "path": [
+            "beta",
+            "mcp"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Resources List",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{MCP_API_KEY}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json, text/event-stream"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"jsonrpc\": \"2.0\",\r\n  \"id\": 3,\r\n  \"method\": \"resources/list\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://location-services-mcp.arcgis.com/beta/mcp",
+          "protocol": "https",
+          "host": [
+            "location-services-mcp",
+            "arcgis",
+            "com"
+          ],
+          "path": [
+            "beta",
+            "mcp"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
       "name": "Prompts List",
       "request": {
         "auth": {
@@ -119,7 +209,7 @@
         ],
         "body": {
           "mode": "raw",
-          "raw": "{\r\n  \"jsonrpc\": \"2.0\",\r\n  \"id\": 2,\r\n  \"method\": \"prompts/list\"\r\n}",
+          "raw": "{\r\n  \"jsonrpc\": \"2.0\",\r\n  \"id\": 4,\r\n  \"method\": \"prompts/list\"\r\n}",
           "options": {
             "raw": {
               "language": "json"
@@ -161,13 +251,13 @@
           "mode": "formdata",
           "formdata": [
             {
-              "key": "f",
-              "value": "json",
+              "key": "SingleLine",
+              "value": "Disneyland Park, Anaheim, California",
               "type": "text"
             },
             {
-              "key": "SingleLine",
-              "value": "Find Esri headquarters in Redlands",
+              "key": "f",
+              "value": "json",
               "type": "text"
             }
           ]
@@ -289,6 +379,61 @@
             "NAServer",
             "Route_World",
             "solve"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Static Maps",
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{MCP_API_KEY}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "body": {
+          "mode": "formdata",
+          "formdata": []
+        },
+        "url": {
+          "raw": "https://static-maps-api.arcgis.com/arcgis/rest/services/static-maps-service/v1/static-maps/arcgis/imagery/with-point?x=117.1964&y=34.0601",
+          "protocol": "https",
+          "host": [
+            "static-maps-api",
+            "arcgis",
+            "com"
+          ],
+          "path": [
+            "arcgis",
+            "rest",
+            "services",
+            "static-maps-service",
+            "v1",
+            "static-maps",
+            "arcgis",
+            "imagery",
+            "with-point"
+          ],
+          "query": [
+            {
+              "key": "x",
+              "value": "117.1964"
+            },
+            {
+              "key": "y",
+              "value": "34.0601"
+            }
           ]
         }
       },
