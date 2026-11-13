@@ -9,11 +9,13 @@ Chat-first map app. A FastAPI backend classifies each message, calls **MCP for A
 
 ## Setup
 ```bash
-python3 -m venv .venv
-source .venv/bin/activate          # Windows: .venv\Scripts\activate
-pip install -r requirements.txt    # fastapi, uvicorn, httpx, jinja2
-cp mcp.example.json mcp.json       # then edit mcp.json
+pip install -r requirements.txt
 ```
+Copy to mcp.json:
+```bash
+copy mcp.example.json mcp.json
+```
+
 Run (exact command):
 ```bash
 uvicorn app:app --host 0.0.0.0 --port 3000
